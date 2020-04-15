@@ -17,13 +17,30 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+    implementation files('libs\\TingPhoneOpenSDK_7.1.6.jar')
+    implementation files('libs\\XmDownload_1.7.jar')
+    implementation files('libs\\XmlyOAuth2SDK_V1.11.jar')
+    implementation files('libs\\xutil3.3.6.jar')
+    // SDK在解析请求返回的JSON数据时用到
+    implementation 'com.google.code.gson:gson:2.8.1'
+// SDK联网框架使用okhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+// SDK联网框架使用okhttp
+    implementation 'com.squareup.okio:okio:1.15.0'
+// v4包
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
