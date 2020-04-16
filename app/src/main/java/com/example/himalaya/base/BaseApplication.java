@@ -2,6 +2,7 @@ package com.example.himalaya.base;
 
 import android.app.Application;
 
+import com.example.himalaya.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 
@@ -9,6 +10,7 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        LogUtil.init(this.getPackageName(), true);
         CommonRequest mXimalaya = CommonRequest.getInstanse();
         if(DTransferConstants.isRelease) {
             String mAppSecret = "8646d66d6abe2efd14f2891f9fd1c8af";
