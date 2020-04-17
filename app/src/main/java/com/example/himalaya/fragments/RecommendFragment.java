@@ -1,17 +1,99 @@
 package com.example.himalaya.fragments;
 
+import android.graphics.Rect;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.himalaya.R;
+import com.example.himalaya.adapters.RecommendListAdapter;
 import com.example.himalaya.base.BaseFragment;
+import com.example.himalaya.interfaces.IRecommendViewCallback;
+import com.example.himalaya.presenters.RecommendPresenter;
+import com.example.himalaya.utils.Constants;
+import com.example.himalaya.utils.LogUtil;
+import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
+import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
+import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
+import com.ximalaya.ting.android.opensdk.model.album.Album;
+import com.ximalaya.ting.android.opensdk.model.album.GussLikeAlbumList;
 
-public class RecommendFragment extends BaseFragment {
+import net.lucode.hackware.magicindicator.buildins.UIUtil;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class RecommendFragment extends BaseFragment implements IRecommendViewCallback {
+    private static final String TAG = "RecommendFragment";
+    private View view;
+    private RecommendListAdapter recommendListAdapter;
+    private RecommendPresenter mRecommendPresenter;
 
     @Override
     protected View onSubViewLoaded(LayoutInflater layoutInflater, ViewGroup container) {
-        View view = layoutInflater.inflate(R.layout.fragment_recommend,container,false);
+        //View加载完成
+        view = layoutInflater.inflate(R.layout.fragment_recommend,container,false);
+
+        RecyclerView recommend_list = view.findViewById(R.id.recommend_list);
+        //布局管理器
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recommend_list.setLayoutManager(linearLayoutManager);
+        //设置间距
+        recommend_list.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                outRect.bottom = UIUtil.dip2px(view.getContext(),5);
+                outRect.top = UIUtil.dip2px(view.getContext(),5);
+                outRect.left = UIUtil.dip2px(view.getContext(),5);
+                outRect.right = UIUtil.dip2px(view.getContext(),5);
+            }
+        });
+        //设置适配器
+        recommendListAdapter = new RecommendListAdapter();
+        recommend_list.setAdapter(recommendListAdapter);
+        //获取到逻辑层的对象
+        mRecommendPresenter = RecommendPresenter.getInstance();
+        //先要注册通知接口的设置
+        mRecommendPresenter.registerViewCallback(this);
+        //获取推荐列表
+        mRecommendPresenter.getRecommendList();
+
+
+
         return view;
+    }
+
+
+    @Override
+    public void onRecommendListLoaded(List<Album> result) {
+        //当我们获取到推荐内容时,方法就会被调用
+        //数据回来之后更新UI
+        recommendListAdapter.setData(result);
+    }
+
+    @Override
+    public void onLoaderMore(List<Album> result) {
+
+    }
+
+    @Override
+    public void OnRefreshMore(List<Album> result) {
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //取消接口的注册
+        if (mRecommendPresenter != null) {
+            mRecommendPresenter.unRegisterViewCallback(this);
+        }
     }
 }
