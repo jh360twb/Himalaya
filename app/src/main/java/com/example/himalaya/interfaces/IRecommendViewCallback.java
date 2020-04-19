@@ -11,17 +11,16 @@ import java.util.List;
  */
 public interface IRecommendViewCallback {
 
-    /**
-     * 获取推荐内容的结果
-     * @param result
-     */
+    //获取推荐内容的结果
     void onRecommendListLoaded(List<Album> result);
 
-    //加载更多
-    void onLoaderMore(List<Album> result);
+    //网络错误
+    void onNetworkError();
 
-    //下拉刷新
-    void OnRefreshMore(List<Album> result);
+    //数据为空
+    void onEmpty();
 
+    //正在加载
+    void onLoading();
 
 }
