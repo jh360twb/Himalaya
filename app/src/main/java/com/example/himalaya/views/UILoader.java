@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
  */
 public abstract class UILoader extends FrameLayout {
 
-    private View loadingView, successView, neterrorView, emptyView;
+    private View loadingView, successView, netErrorView, emptyView;
     private onRetryClickListener mOnRetryClickListener = null;
 
 
@@ -78,12 +78,12 @@ public abstract class UILoader extends FrameLayout {
         successView.setVisibility(mCurrentStatus == UIStatus.SUCCESS ? VISIBLE : GONE);
 
         //网络错误
-        if (neterrorView == null) {
-            neterrorView = getNetworkErrorView();
-            addView(neterrorView);
+        if (netErrorView == null) {
+            netErrorView = getNetworkErrorView();
+            addView(netErrorView);
         }
 
-        neterrorView.setVisibility(mCurrentStatus == UIStatus.NETWORK_ERROR ? VISIBLE : GONE);
+        netErrorView.setVisibility(mCurrentStatus == UIStatus.NETWORK_ERROR ? VISIBLE : GONE);
 
 
         //空页面

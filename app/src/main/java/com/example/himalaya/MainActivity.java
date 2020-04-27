@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.example.himalaya.adapters.IndicatorAdapter;
 import com.example.himalaya.adapters.MainContentAdapter;
+import com.example.himalaya.base.BaseActivity;
 import com.example.himalaya.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     MagicIndicator magicIndicator;
     private IndicatorAdapter indicatorAdapter;

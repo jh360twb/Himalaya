@@ -1,20 +1,24 @@
 package com.example.himalaya.base;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 
 import com.example.himalaya.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
+import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
+import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
 
 public class BaseApplication extends Application {
 
     private static Handler sHandler = null;
+    private static Context sContext = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        LogUtil.init(this.getPackageName(), true);
+
         CommonRequest mXimalaya = CommonRequest.getInstanse();
         if(DTransferConstants.isRelease) {
             String mAppSecret = "8646d66d6abe2efd14f2891f9fd1c8af";
@@ -27,10 +31,20 @@ public class BaseApplication extends Application {
             mXimalaya.setPackid("com.ximalaya.qunfeng");
             mXimalaya.init(this ,mAppSecret);
         }
+        //初始化播放器
+        XmPlayerManager.getInstance(this).init();
+        XmPlayerConfig.getInstance(sContext).setUseTrackHighBitrate(true);
+        //设置是否显示log
+        LogUtil.init(this.getPackageName(), false);
         sHandler = new Handler();
+        sContext = getBaseContext();
     }
 
     public static Handler getHandler(){
         return sHandler;
+    }
+
+    public static Context getAppContext(){
+        return sContext;
     }
 }

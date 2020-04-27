@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdapter.InnerHolder> {
 
     List<Album> mData = new ArrayList<>();
+    private static final String TAG = "RecommendListAdapter";
+    private onRecommendItemClickListener mOnRecommendItemClickListener = null;
 
     @NonNull
     @Override
@@ -33,8 +35,18 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecommendListAdapter.InnerHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecommendListAdapter.InnerHolder holder, final int position) {
         holder.itemView.setTag(position);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int pos = (int) v.getTag();
+                if (mOnRecommendItemClickListener != null) {
+                    mOnRecommendItemClickListener.onItemClick(pos,mData.get(pos));
+                }
+               // LogUtil.e(TAG,"click -> "+ v.getTag());
+            }
+        });
         holder.setData(mData.get(position));
     }
 
@@ -83,7 +95,14 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
 
             Picasso.with(itemView.getContext()).load(album.getCoverUrlLarge()).into(albumCoverIv);
 
-
         }
+    }
+
+    public  void setonRecommendItemClickListener(onRecommendItemClickListener listener){
+        this.mOnRecommendItemClickListener = listener;
+    }
+
+    public interface onRecommendItemClickListener{
+        void onItemClick(int position, Album album);
     }
 }

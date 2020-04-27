@@ -9,6 +9,9 @@ package com.example.himalaya.utils;
 public class Constants {
 
     //获取推荐列表的专辑数量
-    public static int RECOMMEND_COUNT = 50;
+    public static int COUNT_RECOMMEND = 50;
+
+    //专辑中的声音个数
+    public static int COUNT_TRACKS = 50;
 
 }

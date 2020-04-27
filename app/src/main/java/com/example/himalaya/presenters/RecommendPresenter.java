@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * @author Tian
- * @description
+ * @description 对接口IRecommendPresenter重写
  * @date :2020/4/17 11:52
  */
 public class RecommendPresenter implements IRecommendPresenter {
@@ -54,7 +54,7 @@ public class RecommendPresenter implements IRecommendPresenter {
         //封装参数
         Map<String, String> map = new HashMap<>();
         //表示一页数据返回多少条
-        map.put(DTransferConstants.LIKE_COUNT, Constants.RECOMMEND_COUNT + "");
+        map.put(DTransferConstants.LIKE_COUNT, Constants.COUNT_RECOMMEND + "");
         CommonRequest.getGuessLikeAlbum(map, new IDataCallBack<GussLikeAlbumList>() {
             @Override
             public void onSuccess(GussLikeAlbumList gussLikeAlbumList) {
@@ -88,7 +88,6 @@ public class RecommendPresenter implements IRecommendPresenter {
 
     private void handleRecommendResult(List<Album> albumList) {
         //通知UI
-
         if (albumList != null) {
             if (albumList.size() == 0) {
                 for (IRecommendViewCallback mCallback : mCallbacks) {
@@ -131,4 +130,6 @@ public class RecommendPresenter implements IRecommendPresenter {
             mCallbacks.remove(callback);
         }
     }
+
+
 }
