@@ -1,11 +1,15 @@
 package com.example.himalaya;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -14,6 +18,7 @@ import com.example.himalaya.base.BaseActivity;
 import com.example.himalaya.interfaces.IPlayerCallback;
 import com.example.himalaya.presenters.PlayerPresenter;
 import com.example.himalaya.utils.LogUtil;
+import com.example.himalaya.views.SobPopWindow;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl;
 
@@ -27,7 +32,6 @@ import androidx.viewpager.widget.ViewPager;
 import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_LIST;
 import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_LIST_LOOP;
 import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_RANDOM;
-import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_SINGLE;
 import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_SINGLE_LOOP;
 
 public class PlayerActivity extends BaseActivity implements IPlayerCallback, ViewPager.OnPageChangeListener {
@@ -70,6 +74,14 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         sIntegerPlayModeMap.put(PLAY_MODEL_SINGLE_LOOP, PLAY_MODEL_LIST);
     }
 
+    private ImageView mPlayListBtn;
+    private SobPopWindow mSobPopWindow;
+    private ValueAnimator mEnterBgAnimator;
+    private ValueAnimator mOutBgAnimator;
+    private ImageView mBackFifIv;
+    private ImageView mFrontFifIv;
+    private long mCurrentProgress = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +91,32 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         mInstance.registerViewCallback(this);
         mInstance.getPlayList();
         initEvent();
+        initBgAnimation();
+    }
+
+    //背景的渐变动画
+    private void initBgAnimation() {
+        //进入
+        mEnterBgAnimator = ValueAnimator.ofFloat(1.0f,0.7f);
+        mEnterBgAnimator.setDuration(300);
+        mEnterBgAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                //LogUtil.e(TAG,"value -> " + animation.getAnimatedValue());
+                //背景透明度变化
+                upDateBgAlpha((Float) animation.getAnimatedValue());
+            }
+        });
+        //退出
+        mOutBgAnimator = ValueAnimator.ofFloat(0.7f,1.0f);
+        mOutBgAnimator.setDuration(300);
+        mOutBgAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+               upDateBgAlpha((Float) animation.getAnimatedValue());
+            }
+        });
+
     }
 
     @Override
@@ -178,24 +216,116 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
             }
         });
 
+        //展示播放列表
+        mPlayListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //从下到上出现
+                mSobPopWindow.showAtLocation(v, Gravity.BOTTOM,0,0);
+                //背景透明度
+                mEnterBgAnimator.start();
+            }
+        });
+        mSobPopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                //窗体消失时恢复
+                mOutBgAnimator.start();
+            }
+        });
+
+        //列表点击切换歌曲
+        mSobPopWindow.setOnItemClickListener(new SobPopWindow.onItemClickListener() {
+            @Override
+            public void onClick(int pos) {
+                if (mInstance != null) {
+                    mInstance.playByIndex(pos);
+                }
+            }
+        });
+
+        //列表切换播放模式和顺序
+        mSobPopWindow.setPlayListActionListener(new SobPopWindow.playListActionListener() {
+            @Override
+            public void onPlayModeClick() {
+                //切换播放模式
+                switchPlayMode();
+            }
+
+            @Override
+            public void onPlayOrderClick() {
+                if (mInstance != null) {
+                    mInstance.reversePlayList();
+                }
+            }
+        });
+
+        //后退15秒
+        mBackFifIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mInstance != null) {
+                    long pos;
+                    if (mCurrentProgress>15000) {
+                        pos = mCurrentProgress - 15000;
+                    }else {
+                        pos = 0;
+                    }
+                    mInstance.seekTo((int) pos);
+                }
+            }
+        });
+
+        //前进15秒
+        mFrontFifIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mInstance != null) {
+                    long pos;
+                    if (mCurrentProgress+15000<mTotalSeek) {
+                        pos = mCurrentProgress + 15000;
+                    }else {
+                        pos = mTotalSeek;
+                    }
+                    mInstance.seekTo((int) pos);
+                }
+            }
+        });
+    }
+
+    private void switchPlayMode() {
+        XmPlayListControl.PlayMode playMode = sIntegerPlayModeMap.get(mCurrentPlayMode);
+        if (mInstance != null) {
+            mInstance.switchPlayMode(playMode);
+        }
+    }
+
+    private void upDateBgAlpha(float alpha) {
+        Window window = getWindow();
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        attributes.alpha = alpha;
+        window.setAttributes(attributes);
     }
 
     //改变
-    private void upDatePlayModeBtnImg() {
+    private int upDatePlayModeBtnImg() {
+        int resId = R.drawable.selector_play_mode_list_order;
         switch (mCurrentPlayMode) {
             case PLAY_MODEL_LIST:
-                mPlayModeSwitchBtn.setImageResource(R.drawable.selector_play_mode_list_order);
+                resId = R.drawable.selector_play_mode_list_order;
                 break;
             case PLAY_MODEL_RANDOM:
-                mPlayModeSwitchBtn.setImageResource(R.drawable.selector_paly_mode_random);
+                resId = R.drawable.selector_paly_mode_random;
                 break;
             case PLAY_MODEL_SINGLE_LOOP:
-                mPlayModeSwitchBtn.setImageResource(R.drawable.selector_paly_mode_single_loop);
+                resId = R.drawable.selector_paly_mode_single_loop;
                 break;
             case PLAY_MODEL_LIST_LOOP:
-                mPlayModeSwitchBtn.setImageResource(R.drawable.selector_paly_mode_list_order_looper);
+                resId = R.drawable.selector_paly_mode_list_order_looper;
                 break;
         }
+
+        return resId;
     }
 
     private void initView() {
@@ -208,10 +338,15 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         mTrackTitle = findViewById(R.id.track_title);
         mTrackViewPager = findViewById(R.id.track_pager_view);
         mPlayModeSwitchBtn = findViewById(R.id.player_mode_switch_btn);
+        mPlayListBtn = findViewById(R.id.player_list);
+        mBackFifIv = findViewById(R.id.backFifIv);
+        mFrontFifIv = findViewById(R.id.frontFifIv);
+
 
         //创建适配器
         mPlayerTrackPagerAdapter = new PlayerTrackPagerAdapter();
         mTrackViewPager.setAdapter(mPlayerTrackPagerAdapter);
+
 
 
         //初始化图标
@@ -224,6 +359,9 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
                 mControlBtn.setImageResource(R.mipmap.play_normal);
             }
         }
+
+        //播放列表弹窗
+        mSobPopWindow = new SobPopWindow();
     }
 
     @Override
@@ -262,19 +400,29 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
 
     @Override
     public void onListLoaded(List<Track> list) {
-        //LogUtil.e(TAG,"list ->" + list.size());
-        mPlayerTrackPagerAdapter.setData(list);
+        //Viewpager的适配器
+        if (mPlayerTrackPagerAdapter != null) {
+            mPlayerTrackPagerAdapter.setData(list);
+        }
+        //给列表适配器
+        if (mSobPopWindow != null) {
+            mSobPopWindow.setListData(list);
+        }
+
+
     }
 
     @Override
     public void onPlayModeChange(XmPlayListControl.PlayMode mode) {
         mCurrentPlayMode = mode;
-        upDatePlayModeBtnImg();
+        mPlayModeSwitchBtn.setImageResource(upDatePlayModeBtnImg());
+        mSobPopWindow.setView(upDatePlayModeBtnImg());
     }
 
     @Override
     public void onProgressChange(long currentProgress, long total) {
         mTotalSeek = total;
+        mCurrentProgress = currentProgress;
         //非用户拖动
         if (!mIsUserTouchSeekBar) {
             mTrackSeekBar.setMax((int) total);
@@ -342,6 +490,15 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
             mTrackViewPager.setCurrentItem(index, true);
         }
 
+        if (mSobPopWindow != null) {
+            mSobPopWindow.setCurrentIndex(index);
+        }
+
+    }
+
+    @Override
+    public void updateListOrder(boolean isReverse) {
+        mSobPopWindow.upDateOrderIcon(isReverse);
     }
 
     //==============ViewPager==========

@@ -1,5 +1,6 @@
 package com.example.himalaya.presenters;
 
+import com.example.himalaya.api.XimalayaApi;
 import com.example.himalaya.interfaces.IRecommendPresenter;
 import com.example.himalaya.interfaces.IRecommendViewCallback;
 import com.example.himalaya.utils.Constants;
@@ -25,6 +26,7 @@ public class RecommendPresenter implements IRecommendPresenter {
     private static final String TAG = "RecommendPresenter";
 
     private List<IRecommendViewCallback> mCallbacks = new ArrayList<>();
+    private List<Album> mCurrentAlbums =null;
 
     private RecommendPresenter() {
     }
@@ -45,17 +47,19 @@ public class RecommendPresenter implements IRecommendPresenter {
 
     @Override
     public void getRecommendList() {
-        getRecommandData();
+        getRecommendData();
+    }
+
+    public List<Album> getCurrentRecommand() {
+        return mCurrentAlbums;
     }
 
     //获取推荐内容 接口3.10.6
-    private void getRecommandData() {
+    private void getRecommendData() {
         updateLoading();
-        //封装参数
-        Map<String, String> map = new HashMap<>();
-        //表示一页数据返回多少条
-        map.put(DTransferConstants.LIKE_COUNT, Constants.COUNT_RECOMMEND + "");
-        CommonRequest.getGuessLikeAlbum(map, new IDataCallBack<GussLikeAlbumList>() {
+        XimalayaApi ximalayaApi = XimalayaApi.getInstance();
+        ximalayaApi.getRecommendList(new IDataCallBack<GussLikeAlbumList>() {
+
             @Override
             public void onSuccess(GussLikeAlbumList gussLikeAlbumList) {
                 //已经到达主线程了,所以不需要切换线程
@@ -68,7 +72,6 @@ public class RecommendPresenter implements IRecommendPresenter {
                     }
                 }
             }
-
             @Override
             public void onError(int i, String s) {
                 LogUtil.e(TAG, i + s);
@@ -98,6 +101,7 @@ public class RecommendPresenter implements IRecommendPresenter {
                     mCallback.onRecommendListLoaded(albumList);
                 }
             }
+            mCurrentAlbums = albumList;
         }
     }
 
@@ -130,6 +134,7 @@ public class RecommendPresenter implements IRecommendPresenter {
             mCallbacks.remove(callback);
         }
     }
+
 
 
 }

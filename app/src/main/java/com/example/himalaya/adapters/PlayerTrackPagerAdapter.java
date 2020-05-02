@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.himalaya.R;
+import com.example.himalaya.utils.LogUtil;
 import com.squareup.picasso.Picasso;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 
@@ -23,6 +24,7 @@ import androidx.viewpager.widget.PagerAdapter;
 public class PlayerTrackPagerAdapter extends PagerAdapter {
 
     private List<Track> mData = new ArrayList<>();
+    private static final String TAG = "PlayerTrackPagerAdapter";
 
     @NonNull
     @Override
@@ -33,6 +35,7 @@ public class PlayerTrackPagerAdapter extends PagerAdapter {
         ImageView item_pager = itemView.findViewById(R.id.track_item_pager);
         //设置图片
         Track track = mData.get(position);
+        LogUtil.e(TAG,"POSITION ->" +position);
         String coverUrlLarge = track.getCoverUrlLarge();
         Picasso.with(container.getContext()).load(coverUrlLarge).into(item_pager);
         return itemView;

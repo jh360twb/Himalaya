@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="60dp"
     android:background="@drawable/shape_album_item_bg">
 
     <TextView
         android:id="@+id/order_text"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:padding="18dp"
-        android:text="0"
+        android:gravity="center"
+        android:text="0000"
         android:textColor="#979797"
         android:textSize="22sp" />
 
@@ -42,6 +42,7 @@
                 android:id="@+id/detail_item_play_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:drawableLeft="@mipmap/play_info_icon"
                 android:drawablePadding="4dp"
                 android:text="14.4万"
@@ -71,7 +72,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:text="2018-11-22"
         android:textColor="#979797"
         android:textSize="12sp" />

@@ -1,5 +1,7 @@
 package com.example.himalaya.utils;
 
+import android.annotation.SuppressLint;
+
 import com.example.himalaya.base.BaseFragment;
 import com.example.himalaya.fragments.HistoryFragment;
 import com.example.himalaya.fragments.RecommendFragment;
@@ -10,6 +12,7 @@ import java.util.Map;
 
 public class FragmentCreator {
     //缓存,不会重复加载
+    @SuppressLint("UseSparseArrays")
     private static Map<Integer, BaseFragment> sCache = new HashMap<>();
     public static final int INDEX_RECOMMEND = 0;
     public static final int INDEX_SUBSCRIPTION = 1;

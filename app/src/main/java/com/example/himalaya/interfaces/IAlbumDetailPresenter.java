@@ -10,7 +10,7 @@ import com.example.himalaya.base.IBasePresenter;
 public interface IAlbumDetailPresenter extends IBasePresenter<IAlbumDetailViewCallback> {
 
     //下拉刷新
-    void pullRefreshMore();
+    void refresh();
 
     //上拉加载更多
     void loadMore();

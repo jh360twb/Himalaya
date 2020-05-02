@@ -65,7 +65,7 @@ public class TracksListAdapter extends RecyclerView.Adapter<TracksListAdapter.In
             @Override
             public void onClick(View v) {
                 if (mOnTrackClickListener != null) {
-                    mOnTrackClickListener.onClick(mData,position);
+                    mOnTrackClickListener.onItemClick(mData,position);
                 }
             }
         });
@@ -98,6 +98,6 @@ public class TracksListAdapter extends RecyclerView.Adapter<TracksListAdapter.In
     }
 
     public interface onTrackClickListener{
-        void onClick(List<Track> list ,int position);
+        void onItemClick(List<Track> list , int position);
     }
 }

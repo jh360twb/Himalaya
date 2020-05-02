@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff4f4f4">
@@ -40,47 +41,36 @@
         android:layout_below="@id/subscription_container"
         android:background="#EBE8E8">
 
-        <ImageView
-            android:id="@+id/detail_play_control"
-            android:layout_width="39dp"
-            android:layout_height="39dp"
-            android:layout_centerVertical="true"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="10dp"
-            android:src="@drawable/selector_play_control_play" />
-
-        <TextView
-            android:id="@+id/play_control_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="140dp"
-            android:layout_toRightOf="@id/detail_play_control"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:singleLine="true"
-            android:text="@string/click_play_tips_text"
-            android:textSize="14sp" />
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/detail_play_controller"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="4dp"
-            android:layout_toLeftOf="@id/detail_arrow"
-            android:text="选集" />
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/detail_arrow"
-            android:layout_width="16dp"
-            android:layout_height="8dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="18dp"
-            android:src="@mipmap/arrow_icon" />
+            <ImageView
+                android:id="@+id/detail_play_iv"
+                android:layout_width="39dp"
+                android:layout_height="39dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/selector_play_control_play" />
+
+            <com.example.himalaya.views.MarqueeTextView
+                android:id="@+id/detail_play_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:singleLine="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:ellipsize="marquee"
+                android:focusableInTouchMode="true"
+                android:focusable="true"
+                android:text="@string/click_play_tips_text"
+                android:textSize="14sp" />
+        </LinearLayout>
+
 
 
     </RelativeLayout>
@@ -123,9 +113,8 @@
 
     <FrameLayout
         android:id="@+id/detail_list"
-        android:layout_below="@+id/player_control_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
+        android:layout_height="match_parent"
+        android:layout_below="@+id/player_control_container" />
 
 </RelativeLayout>

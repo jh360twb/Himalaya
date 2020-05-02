@@ -9,8 +9,8 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 public class MainContentAdapter extends FragmentPagerAdapter {
 
-    public MainContentAdapter(@NonNull FragmentManager fm) {
-        super(fm);
+    public MainContentAdapter(@NonNull FragmentManager fm, int behavior) {
+        super(fm, behavior);
     }
 
     @NonNull
