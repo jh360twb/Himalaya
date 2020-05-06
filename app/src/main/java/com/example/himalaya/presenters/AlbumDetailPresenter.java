@@ -1,24 +1,15 @@
 package com.example.himalaya.presenters;
 
-import android.widget.Toast;
-
-import com.example.himalaya.api.XimalayaApi;
-import com.example.himalaya.base.BaseApplication;
+import com.example.himalaya.data.XimalayaApi;
 import com.example.himalaya.interfaces.IAlbumDetailPresenter;
 import com.example.himalaya.interfaces.IAlbumDetailViewCallback;
-import com.example.himalaya.utils.Constants;
-import com.example.himalaya.utils.LogUtil;
-import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
-import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.model.track.TrackList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Tian
@@ -37,6 +28,7 @@ public class AlbumDetailPresenter implements IAlbumDetailPresenter {
     //当前页码
     private int mCurrentPage = 0;
     private boolean isRefresh = false;
+    private boolean ifCanClick = false;
 
     private void AlbumDetailPresenter() {
     }
@@ -146,5 +138,13 @@ public class AlbumDetailPresenter implements IAlbumDetailPresenter {
     @Override
     public void unRegisterViewCallback(IAlbumDetailViewCallback callback) {
         mAlbumCallbacks.remove(callback);
+    }
+
+    public boolean getIfCanClick() {
+        return ifCanClick;
+    }
+
+    public void setIfCanClick(boolean ifCanClick){
+        this.ifCanClick = ifCanClick;
     }
 }

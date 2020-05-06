@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
-import com.example.himalaya.api.XimalayaApi;
+import com.example.himalaya.data.XimalayaApi;
 import com.example.himalaya.base.BaseApplication;
 import com.example.himalaya.interfaces.IPlayerCallback;
 import com.example.himalaya.interfaces.IPlayerPresenter;
@@ -205,8 +205,10 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
     public void getPlayList() {
         if (mPlayerManager != null) {
             List<Track> playList = mPlayerManager.getPlayList();
-            for (IPlayerCallback callback : mCallbacks) {
-                callback.onListLoaded(playList);
+            if (playList != null) {
+                for (IPlayerCallback callback : mCallbacks) {
+                    callback.onListLoaded(playList);
+                }
             }
         }
     }
@@ -340,7 +342,9 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
     @Override
     public void onStartPlayAds(Advertis advertis, int i) {
         //LogUtil.e(TAG, "onStartPlayAds");
-
+        for (IPlayerCallback callback : mCallbacks) {
+            callback.onProgressChange(0,0);
+        }
     }
 
     @Override

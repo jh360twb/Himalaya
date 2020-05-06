@@ -118,7 +118,7 @@
                 android:layout_width="0dp"
                 android:layout_height="35dp"
                 android:layout_weight="1"
-                android:src="@drawable/selector_player_play" />
+                android:src="@mipmap/play_press" />
 
             <ImageView
                 android:id="@+id/play_next"

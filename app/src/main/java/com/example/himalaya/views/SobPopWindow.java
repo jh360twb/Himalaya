@@ -44,14 +44,17 @@ public class SobPopWindow extends PopupWindow{
         super(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         //先要设置setBackgroundDrawable,然后setOutsideTouchable才有效果
         setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //点击外部可消失
         setOutsideTouchable(true);
+        //不可点击背景的其他按钮
+        setFocusable(true);
         mPopView = LayoutInflater.from(BaseApplication.getAppContext()).inflate(R.layout.pop_play_list, null);
         setContentView(mPopView);
         //设置窗口进入和退出的动画
         setAnimationStyle(R.style.pop_animation);
         initView();
         initEvent();
-
+        upDateOrderIcon(false);
     }
 
     private void initView() {

@@ -15,6 +15,7 @@ import com.example.himalaya.presenters.AlbumDetailPresenter;
 import com.example.himalaya.presenters.RecommendPresenter;
 import com.example.himalaya.utils.LogUtil;
 import com.example.himalaya.views.UILoader;
+import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 
 import net.lucode.hackware.magicindicator.buildins.UIUtil;
@@ -62,7 +63,9 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
     private View createSuccessView(LayoutInflater layoutInflater, ViewGroup container) {
         view = layoutInflater.inflate(R.layout.fragment_recommend, container, false);
         //View加载完成
-
+        //开源的框架
+        TwinklingRefreshLayout scrollView = view.findViewById(R.id.scroll_view);
+        scrollView.setPureScrollModeOn();
         RecyclerView recommend_list = view.findViewById(R.id.recommend_list);
         //布局管理器
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -139,9 +142,13 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
 
     @Override
     public void onItemClick(int position, Album album) {
-        AlbumDetailPresenter.getInstance().setTargetAlbum(album);
-        LogUtil.e(TAG,"position -> "+position);
-        Intent intent = new Intent(getContext(), DetailActivity.class);
-        startActivity(intent);
+        AlbumDetailPresenter presenter = AlbumDetailPresenter.getInstance();
+        presenter.setTargetAlbum(album);
+        //LogUtil.e(TAG, "position -> " + position);
+        boolean ifCanClick = presenter.getIfCanClick();
+        //if (ifCanClick) {
+            Intent intent = new Intent(getContext(), DetailActivity.class);
+            startActivity(intent);
+        //}
     }
 }

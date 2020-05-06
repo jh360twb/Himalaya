@@ -31,15 +31,8 @@ import com.example.himalaya.presenters.PlayerPresenter;
 import com.example.himalaya.utils.ImageBlur;
 import com.example.himalaya.utils.LogUtil;
 import com.example.himalaya.views.UILoader;
-import com.google.android.material.snackbar.Snackbar;
-import com.lcodecore.tkrefreshlayout.IBottomView;
 import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
 import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
-import com.lcodecore.tkrefreshlayout.footer.BallPulseView;
-import com.lcodecore.tkrefreshlayout.footer.LoadingView;
-import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
-import com.lcodecore.tkrefreshlayout.header.bezierlayout.BezierLayout;
-import com.lcodecore.tkrefreshlayout.header.progresslayout.ProgressLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
@@ -175,7 +168,7 @@ public class DetailActivity extends BaseActivity implements IAlbumDetailViewCall
 
     @SuppressLint("ResourceAsColor")
     private View createSuccessView(ViewGroup container) {
-        final View view = LayoutInflater.from(this).inflate(R.layout.item_succ_tracks_list, container, false);
+        final View view = LayoutInflater.from(this).inflate(R.layout.succ_tracks_list, container, false);
         mRefreshLayout = view.findViewById(R.id.refresh_layout);
         tracks_list = view.findViewById(R.id.tracks_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

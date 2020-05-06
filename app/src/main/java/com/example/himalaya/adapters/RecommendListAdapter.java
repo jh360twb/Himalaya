@@ -93,8 +93,16 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
             }
             albumContentCountTv.setText(album.getIncludeTrackCount() + "");
 
-            Picasso.with(itemView.getContext()).load(album.getCoverUrlLarge()).into(albumCoverIv);
-
+            if (!album.getCoverUrlMiddle().isEmpty()) {
+                Picasso.with(itemView.getContext())
+                        .load(album.getCoverUrlMiddle())
+                        .placeholder(R.mipmap.logo)
+                        .into(albumCoverIv);
+            }else {
+                Picasso.with(itemView.getContext())
+                        .load(R.mipmap.logo)
+                        .into(albumCoverIv);
+            }
         }
     }
 

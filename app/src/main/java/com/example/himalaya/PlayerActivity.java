@@ -1,13 +1,10 @@
 package com.example.himalaya;
 
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
@@ -17,22 +14,19 @@ import com.example.himalaya.adapters.PlayerTrackPagerAdapter;
 import com.example.himalaya.base.BaseActivity;
 import com.example.himalaya.interfaces.IPlayerCallback;
 import com.example.himalaya.presenters.PlayerPresenter;
-import com.example.himalaya.utils.LogUtil;
+import com.example.himalaya.views.PopWindowBgChange;
 import com.example.himalaya.views.SobPopWindow;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import androidx.viewpager.widget.ViewPager;
 
+import static com.example.himalaya.utils.PlayModeUtil.sIntegerPlayModeMap;
+import static com.example.himalaya.utils.PlayModeUtil.upDatePlayModeBtnImg;
 import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_LIST;
-import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_LIST_LOOP;
-import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_RANDOM;
-import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_SINGLE_LOOP;
 
 public class PlayerActivity extends BaseActivity implements IPlayerCallback, ViewPager.OnPageChangeListener {
 
@@ -63,21 +57,9 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
     private ImageView mPlayModeSwitchBtn;
     //当前播放模式
     private XmPlayListControl.PlayMode mCurrentPlayMode = PLAY_MODEL_LIST;
-    //播放模式的map
-    private static Map<XmPlayListControl.PlayMode, XmPlayListControl.PlayMode> sIntegerPlayModeMap = new HashMap<>();
-
-    //四种播放模式,默认为列表播放
-    static {
-        sIntegerPlayModeMap.put(PLAY_MODEL_LIST, PLAY_MODEL_LIST_LOOP);
-        sIntegerPlayModeMap.put(PLAY_MODEL_LIST_LOOP, PLAY_MODEL_RANDOM);
-        sIntegerPlayModeMap.put(PLAY_MODEL_RANDOM, PLAY_MODEL_SINGLE_LOOP);
-        sIntegerPlayModeMap.put(PLAY_MODEL_SINGLE_LOOP, PLAY_MODEL_LIST);
-    }
 
     private ImageView mPlayListBtn;
     private SobPopWindow mSobPopWindow;
-    private ValueAnimator mEnterBgAnimator;
-    private ValueAnimator mOutBgAnimator;
     private ImageView mBackFifIv;
     private ImageView mFrontFifIv;
     private long mCurrentProgress = 0;
@@ -91,32 +73,8 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         mInstance.registerViewCallback(this);
         mInstance.getPlayList();
         initEvent();
-        initBgAnimation();
-    }
-
-    //背景的渐变动画
-    private void initBgAnimation() {
-        //进入
-        mEnterBgAnimator = ValueAnimator.ofFloat(1.0f,0.7f);
-        mEnterBgAnimator.setDuration(300);
-        mEnterBgAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                //LogUtil.e(TAG,"value -> " + animation.getAnimatedValue());
-                //背景透明度变化
-                upDateBgAlpha((Float) animation.getAnimatedValue());
-            }
-        });
-        //退出
-        mOutBgAnimator = ValueAnimator.ofFloat(0.7f,1.0f);
-        mOutBgAnimator.setDuration(300);
-        mOutBgAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-               upDateBgAlpha((Float) animation.getAnimatedValue());
-            }
-        });
-
+        //列表弹出时背景变化
+        PopWindowBgChange.initBgAnimation(getWindow());
     }
 
     @Override
@@ -211,7 +169,6 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
                 if (mInstance != null) {
                     mInstance.switchPlayMode(playMode);
                     mCurrentPlayMode = playMode;
-
                 }
             }
         });
@@ -221,16 +178,17 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
             @Override
             public void onClick(View v) {
                 //从下到上出现
-                mSobPopWindow.showAtLocation(v, Gravity.BOTTOM,0,0);
+                mSobPopWindow.showAtLocation(v, Gravity.BOTTOM, 0, 0);
                 //背景透明度
-                mEnterBgAnimator.start();
+                PopWindowBgChange.mEnterBgAnimator.start();
             }
         });
         mSobPopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 //窗体消失时恢复
-                mOutBgAnimator.start();
+                //mOutBgAnimator.start();
+                PopWindowBgChange.mOutBgAnimator.start();
             }
         });
 
@@ -266,9 +224,9 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
             public void onClick(View v) {
                 if (mInstance != null) {
                     long pos;
-                    if (mCurrentProgress>15000) {
+                    if (mCurrentProgress > 15000) {
                         pos = mCurrentProgress - 15000;
-                    }else {
+                    } else {
                         pos = 0;
                     }
                     mInstance.seekTo((int) pos);
@@ -282,9 +240,9 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
             public void onClick(View v) {
                 if (mInstance != null) {
                     long pos;
-                    if (mCurrentProgress+15000<mTotalSeek) {
+                    if (mCurrentProgress + 15000 < mTotalSeek) {
                         pos = mCurrentProgress + 15000;
-                    }else {
+                    } else {
                         pos = mTotalSeek;
                     }
                     mInstance.seekTo((int) pos);
@@ -298,34 +256,6 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         if (mInstance != null) {
             mInstance.switchPlayMode(playMode);
         }
-    }
-
-    private void upDateBgAlpha(float alpha) {
-        Window window = getWindow();
-        WindowManager.LayoutParams attributes = window.getAttributes();
-        attributes.alpha = alpha;
-        window.setAttributes(attributes);
-    }
-
-    //改变
-    private int upDatePlayModeBtnImg() {
-        int resId = R.drawable.selector_play_mode_list_order;
-        switch (mCurrentPlayMode) {
-            case PLAY_MODEL_LIST:
-                resId = R.drawable.selector_play_mode_list_order;
-                break;
-            case PLAY_MODEL_RANDOM:
-                resId = R.drawable.selector_paly_mode_random;
-                break;
-            case PLAY_MODEL_SINGLE_LOOP:
-                resId = R.drawable.selector_paly_mode_single_loop;
-                break;
-            case PLAY_MODEL_LIST_LOOP:
-                resId = R.drawable.selector_paly_mode_list_order_looper;
-                break;
-        }
-
-        return resId;
     }
 
     private void initView() {
@@ -348,7 +278,6 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         mTrackViewPager.setAdapter(mPlayerTrackPagerAdapter);
 
 
-
         //初始化图标
         if (mInstance.isPlaying()) {
             if (mControlBtn != null) {
@@ -356,7 +285,7 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
             }
         } else {
             if (mControlBtn != null) {
-                mControlBtn.setImageResource(R.mipmap.play_normal);
+                mControlBtn.setImageResource(R.mipmap.play_press);
             }
         }
 
@@ -415,8 +344,8 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
     @Override
     public void onPlayModeChange(XmPlayListControl.PlayMode mode) {
         mCurrentPlayMode = mode;
-        mPlayModeSwitchBtn.setImageResource(upDatePlayModeBtnImg());
-        mSobPopWindow.setView(upDatePlayModeBtnImg());
+        mPlayModeSwitchBtn.setImageResource(upDatePlayModeBtnImg(mCurrentPlayMode));
+        mSobPopWindow.setView(upDatePlayModeBtnImg(mCurrentPlayMode));
     }
 
     @Override

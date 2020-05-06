@@ -5,21 +5,29 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.himalaya.adapters.IndicatorAdapter;
 import com.example.himalaya.adapters.MainContentAdapter;
+import com.example.himalaya.data.XimalayaApi;
 import com.example.himalaya.base.BaseActivity;
 import com.example.himalaya.interfaces.IPlayerCallback;
 import com.example.himalaya.presenters.PlayerPresenter;
 import com.example.himalaya.presenters.RecommendPresenter;
 import com.example.himalaya.utils.LogUtil;
+import com.example.himalaya.views.PopWindowBgChange;
 import com.example.himalaya.views.RoundRectImageView;
+import com.example.himalaya.views.SobPopWindow;
 import com.squareup.picasso.Picasso;
+import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
+import com.ximalaya.ting.android.opensdk.model.track.TrackList;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
@@ -27,6 +35,10 @@ import net.lucode.hackware.magicindicator.ViewPagerHelper;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
 
 import java.util.List;
+
+import static com.example.himalaya.utils.PlayModeUtil.sIntegerPlayModeMap;
+import static com.example.himalaya.utils.PlayModeUtil.upDatePlayModeBtnImg;
+import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_LIST;
 
 public class MainActivity extends BaseActivity implements IPlayerCallback {
     private static final String TAG = "MainActivity";
@@ -40,6 +52,10 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     private PlayerPresenter mPlayerPresenter;
     private View mPlayControlItem;
     private View mSearchBtn;
+    private ImageView mPlayListIv;
+    private SobPopWindow mSobPopWindow;
+    //当前播放模式
+    private XmPlayListControl.PlayMode mCurrentPlayMode = PLAY_MODEL_LIST;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +64,12 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         initView();
         initPresenter();
         initEvent();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PopWindowBgChange.initBgAnimation(getWindow());
     }
 
     @Override
@@ -61,6 +83,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     private void initPresenter() {
         mPlayerPresenter = PlayerPresenter.getInstance();
         mPlayerPresenter.registerViewCallback(this);
+        mPlayerPresenter.getPlayList();
     }
 
     private void initEvent() {
@@ -108,15 +131,104 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
                         getFirstTrackOfFirstAlbum();
                     }
                 }
+            }
+        });
 
+        //弹出列表
+        mPlayListIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mPlayerPresenter != null) {
+                    boolean has = mPlayerPresenter.hasPlayList();
+                    if (has){
+                        mPlayerPresenter.getPlayList();
+                    }else {
+                        getTracksOfFirstAlbum();
+                    }
+                }
+                mSobPopWindow.showAtLocation(v, Gravity.BOTTOM,0,0);
+                //背景透明度
+                PopWindowBgChange.mEnterBgAnimator.start();
+               // mAlbumDetailPresenter.setIfCanClick(false);
+            }
+        });
+
+        mSobPopWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                PopWindowBgChange.mOutBgAnimator.start();
+            }
+        });
+
+
+        //列表点击切换歌曲
+        mSobPopWindow.setOnItemClickListener(new SobPopWindow.onItemClickListener() {
+            @Override
+            public void onClick(int pos) {
+                if (mPlayerPresenter != null) {
+                    mPlayerPresenter.playByIndex(pos);
+                }
+            }
+        });
+
+        //列表切换播放模式和顺序
+        mSobPopWindow.setPlayListActionListener(new SobPopWindow.playListActionListener() {
+            @Override
+            public void onPlayModeClick() {
+                //切换播放模式
+                switchPlayMode();
+            }
+
+            @Override
+            public void onPlayOrderClick() {
+                if (mPlayerPresenter != null) {
+                    mPlayerPresenter.reversePlayList();
+                }
+            }
+        });
+
+        mSearchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,SearchActivity.class);
+                startActivity(intent);
             }
         });
     }
 
-    private void getFirstTrackOfFirstAlbum() {
+    private void switchPlayMode() {
+        XmPlayListControl.PlayMode playMode = sIntegerPlayModeMap.get(mCurrentPlayMode);
+        if (mPlayerPresenter != null) {
+            mPlayerPresenter.switchPlayMode(playMode);
+        }
+    }
+
+    //获取第一专辑的列表
+    private void getTracksOfFirstAlbum() {
         List<Album> currentRecommand = RecommendPresenter.getInstance().getCurrentRecommand();
-        if (currentRecommand!=null && currentRecommand.size()>0){
+        if (currentRecommand!=null && currentRecommand.size()>0) {
             Album album = currentRecommand.get(0);
+            XimalayaApi instance = XimalayaApi.getInstance();
+            instance.getAlbumDetail(new IDataCallBack<TrackList>() {
+                @Override
+                public void onSuccess(TrackList trackList) {
+                    mPlayerPresenter.setPlayList(trackList.getTracks(),0);
+                    mPlayerPresenter.getPlayList();
+                }
+
+                @Override
+                public void onError(int i, String s) {
+                    Toast.makeText(MainActivity.this, "请求失败", Toast.LENGTH_SHORT).show();
+                }
+            },album.getId(),1);
+        }
+    }
+
+    //获取第一专辑的第一首歌
+    private void getFirstTrackOfFirstAlbum() {
+        List<Album> currentRecommend = RecommendPresenter.getInstance().getCurrentRecommand();
+        if (currentRecommend!=null && currentRecommend.size()>0){
+            Album album = currentRecommend.get(0);
             long id = album.getId();
             mPlayerPresenter.playByAlbumId(id);
         }
@@ -149,10 +261,12 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         mHeaderTitle.setSelected(true);
         mSubTitle = this.findViewById(R.id.main_sub_title);
         mPlayControl = this.findViewById(R.id.main_play_control);
-
         mPlayControlItem = this.findViewById(R.id.main_play_control_item);
+        mPlayListIv = this.findViewById(R.id.main_play_list);
         //搜索
         mSearchBtn = this.findViewById(R.id.search_btn);
+        //列表弹窗
+        mSobPopWindow = new SobPopWindow();
     }
 
     @Override
@@ -162,7 +276,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
 
     @Override
     public void onPlayPause() {
-        mPlayControl.setImageResource(R.drawable.selector_player_play);
+        mPlayControl.setImageResource(R.mipmap.play_press);
     }
 
     @Override
@@ -187,11 +301,16 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
 
     @Override
     public void onListLoaded(List<Track> list) {
+        //给列表适配器
+        if (mSobPopWindow != null) {
+            mSobPopWindow.setListData(list);
+        }
     }
 
     @Override
     public void onPlayModeChange(XmPlayListControl.PlayMode mode) {
-
+        mCurrentPlayMode = mode;
+        mSobPopWindow.setView(upDatePlayModeBtnImg(mCurrentPlayMode));
     }
 
     @Override
@@ -216,10 +335,13 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
             mHeaderTitle.setText(track.getTrackTitle());
             mSubTitle.setText(track.getAnnouncer().getNickname());
         }
+        if (mSobPopWindow != null) {
+            mSobPopWindow.setCurrentIndex(index);
+        }
     }
 
     @Override
     public void updateListOrder(boolean isReverse) {
-
+        mSobPopWindow.upDateOrderIcon(isReverse);
     }
 }
