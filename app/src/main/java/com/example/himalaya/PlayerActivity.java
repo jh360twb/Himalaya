@@ -277,15 +277,16 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         mPlayerTrackPagerAdapter = new PlayerTrackPagerAdapter();
         mTrackViewPager.setAdapter(mPlayerTrackPagerAdapter);
 
-
-        //初始化图标
-        if (mInstance.isPlaying()) {
-            if (mControlBtn != null) {
-                mControlBtn.setImageResource(R.mipmap.stop_normal);
-            }
-        } else {
-            if (mControlBtn != null) {
-                mControlBtn.setImageResource(R.mipmap.play_press);
+        if (mInstance!=null) {
+            //初始化图标
+            if (mInstance.isPlaying()) {
+                if (mControlBtn != null) {
+                    mControlBtn.setImageResource(R.mipmap.stop_normal);
+                }
+            } else {
+                if (mControlBtn != null) {
+                    mControlBtn.setImageResource(R.mipmap.play_press);
+                }
             }
         }
 

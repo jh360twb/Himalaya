@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.example.himalaya.DetailActivity;
 import com.example.himalaya.R;
-import com.example.himalaya.adapters.RecommendListAdapter;
+import com.example.himalaya.adapters.AlbumListAdapter;
 import com.example.himalaya.base.BaseFragment;
 import com.example.himalaya.interfaces.IRecommendViewCallback;
 import com.example.himalaya.presenters.AlbumDetailPresenter;
@@ -26,10 +26,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RecommendFragment extends BaseFragment implements IRecommendViewCallback, UILoader.onRetryClickListener, RecommendListAdapter.onRecommendItemClickListener {
+public class RecommendFragment extends BaseFragment implements IRecommendViewCallback, UILoader.onRetryClickListener, AlbumListAdapter.onAlbumItemClickListener {
     private static final String TAG = "RecommendFragment";
     private View view;
-    private RecommendListAdapter recommendListAdapter;
+    private AlbumListAdapter recommendListAdapter;
     private RecommendPresenter mRecommendPresenter;
     private UILoader uiLoader;
 
@@ -82,8 +82,8 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
             }
         });
         //设置适配器
-        recommendListAdapter = new RecommendListAdapter();
-        recommendListAdapter.setonRecommendItemClickListener(this);
+        recommendListAdapter = new AlbumListAdapter();
+        recommendListAdapter.setonAlbumItemClickListener(this);
         recommend_list.setAdapter(recommendListAdapter);
         return view;
     }
@@ -144,11 +144,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
     public void onItemClick(int position, Album album) {
         AlbumDetailPresenter presenter = AlbumDetailPresenter.getInstance();
         presenter.setTargetAlbum(album);
-        //LogUtil.e(TAG, "position -> " + position);
-        boolean ifCanClick = presenter.getIfCanClick();
-        //if (ifCanClick) {
             Intent intent = new Intent(getContext(), DetailActivity.class);
             startActivity(intent);
-        //}
     }
 }

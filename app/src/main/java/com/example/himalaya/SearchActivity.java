@@ -25,9 +25,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.himalaya.adapters.RecommendListAdapter;
+import com.example.himalaya.adapters.AlbumListAdapter;
 import com.example.himalaya.adapters.SearchRecommendAdapter;
-import com.example.himalaya.adapters.TracksListAdapter;
 import com.example.himalaya.base.BaseApplication;
 import com.example.himalaya.interfaces.ISearchCallback;
 import com.example.himalaya.presenters.AlbumDetailPresenter;
@@ -50,13 +49,13 @@ import java.util.List;
 import static android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT;
 
 public class SearchActivity extends AppCompatActivity implements ISearchCallback,
-        RecommendListAdapter.onRecommendItemClickListener {
+        AlbumListAdapter.onAlbumItemClickListener {
 
     private UILoader mUiLoader;
     private FrameLayout mSearchContainer;
     private TwinklingRefreshLayout mRefreshLayout;
     private RecyclerView mResultListView;
-    private RecommendListAdapter mRecommendListAdapter;
+    private AlbumListAdapter mRecommendListAdapter;
     private ImageView mSearchBack;
     private EditText mSearchInput;
     private ImageView mSearchInputDelete;
@@ -99,7 +98,7 @@ public class SearchActivity extends AppCompatActivity implements ISearchCallback
     }
 
     private void initEvent() {
-        mRecommendListAdapter.setonRecommendItemClickListener(this);
+        mRecommendListAdapter.setonAlbumItemClickListener(this);
         //重新点击加载
         mUiLoader.setonRetryClickListener(new UILoader.onRetryClickListener() {
             @Override
@@ -263,7 +262,7 @@ public class SearchActivity extends AppCompatActivity implements ISearchCallback
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mResultListView.setLayoutManager(layoutManager);
         //设置适配器
-        mRecommendListAdapter = new RecommendListAdapter();
+        mRecommendListAdapter = new AlbumListAdapter();
         mResultListView.setAdapter(mRecommendListAdapter);
         mResultListView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override

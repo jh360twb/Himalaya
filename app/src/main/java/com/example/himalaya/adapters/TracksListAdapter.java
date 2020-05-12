@@ -26,6 +26,7 @@ public class TracksListAdapter extends RecyclerView.Adapter<TracksListAdapter.In
     private SimpleDateFormat mUpdateDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat mDurationFormat = new SimpleDateFormat("mm:ss");
     private onTrackClickListener mOnTrackClickListener = null;
+    private onTrackLongClickListener mCurrentLongTrackClickListener;
 
     @NonNull
     @Override
@@ -69,6 +70,16 @@ public class TracksListAdapter extends RecyclerView.Adapter<TracksListAdapter.In
                 }
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mCurrentLongTrackClickListener!=null){
+                    mCurrentLongTrackClickListener.onItemLongClick(mData,position);
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -99,5 +110,13 @@ public class TracksListAdapter extends RecyclerView.Adapter<TracksListAdapter.In
 
     public interface onTrackClickListener{
         void onItemClick(List<Track> list , int position);
+    }
+
+    public void setOnTrackLongClickListener(onTrackLongClickListener listener){
+        mCurrentLongTrackClickListener = listener;
+    }
+
+    public interface onTrackLongClickListener{
+        void onItemLongClick(List<Track> list , int position);
     }
 }

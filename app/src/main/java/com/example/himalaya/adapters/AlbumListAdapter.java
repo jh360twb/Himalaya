@@ -1,5 +1,6 @@
 package com.example.himalaya.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,30 +22,42 @@ import androidx.recyclerview.widget.RecyclerView;
  * @description 推荐板块的内容的适配器
  * @date :2020/4/16 15:40
  */
-public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdapter.InnerHolder> {
+public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.InnerHolder> {
 
     List<Album> mData = new ArrayList<>();
-    private static final String TAG = "RecommendListAdapter";
-    private onRecommendItemClickListener mOnRecommendItemClickListener = null;
+    private static final String TAG = "AlbumListAdapter";
+    private onAlbumItemClickListener mOnRecommendItemClickListener = null;
+    private onAlbumItemLongClickListener mLongClickListener;
 
     @NonNull
     @Override
     public InnerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend,parent,false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend, parent, false);
         return new InnerHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecommendListAdapter.InnerHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final AlbumListAdapter.InnerHolder holder, final int position) {
         holder.itemView.setTag(position);
+        //点击
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = (int) v.getTag();
                 if (mOnRecommendItemClickListener != null) {
-                    mOnRecommendItemClickListener.onItemClick(pos,mData.get(pos));
+                    mOnRecommendItemClickListener.onItemClick(pos, mData.get(pos));
                 }
-               // LogUtil.e(TAG,"click -> "+ v.getTag());
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int pos = (int) v.getTag();
+                if (mLongClickListener != null) {
+                    mLongClickListener.onItemLongClick(pos, mData.get(pos));
+                }
+                return true;
             }
         });
         holder.setData(mData.get(position));
@@ -72,6 +85,7 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
             super(itemView);
         }
 
+        @SuppressLint("SetTextI18n")
         public void setData(Album album) {
             //找到各个控件,设置数据
             ImageView albumCoverIv = itemView.findViewById(R.id.album_cover);
@@ -86,19 +100,19 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
 
             albumTitleTv.setText(album.getAlbumTitle());
             albumDesTv.setText(album.getAlbumIntro());
-            if (album.getPlayCount()>=10000) {
+            if (album.getPlayCount() >= 10000) {
                 albumPlayCountTv.setText(album.getPlayCount() / 10000 + "万");
-            }else {
-                albumPlayCountTv.setText(album.getPlayCount()+"");
+            } else {
+                albumPlayCountTv.setText(album.getPlayCount() + "");
             }
             albumContentCountTv.setText(album.getIncludeTrackCount() + "");
-
-            if (!album.getCoverUrlMiddle().isEmpty()) {
+            //LogUtil.e(TAG,album.getCoverUrlLarge());
+            if (!album.getCoverUrlLarge().isEmpty()) {
                 Picasso.with(itemView.getContext())
-                        .load(album.getCoverUrlMiddle())
+                        .load(album.getCoverUrlLarge())
                         .placeholder(R.mipmap.logo)
                         .into(albumCoverIv);
-            }else {
+            } else {
                 Picasso.with(itemView.getContext())
                         .load(R.mipmap.logo)
                         .into(albumCoverIv);
@@ -106,11 +120,19 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
         }
     }
 
-    public  void setonRecommendItemClickListener(onRecommendItemClickListener listener){
+    public void setonAlbumItemClickListener(onAlbumItemClickListener listener) {
         this.mOnRecommendItemClickListener = listener;
     }
 
-    public interface onRecommendItemClickListener{
+    public interface onAlbumItemClickListener {
         void onItemClick(int position, Album album);
+    }
+
+    public void setOnAlbumItemLongClickListener(onAlbumItemLongClickListener longClickListener) {
+        mLongClickListener = longClickListener;
+    }
+
+    public interface onAlbumItemLongClickListener {
+        void onItemLongClick(int pos, Album album);
     }
 }

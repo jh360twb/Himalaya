@@ -1,9 +1,16 @@
 package com.example.himalaya;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +23,7 @@ import com.example.himalaya.adapters.IndicatorAdapter;
 import com.example.himalaya.adapters.MainContentAdapter;
 import com.example.himalaya.data.XimalayaApi;
 import com.example.himalaya.base.BaseActivity;
+import com.example.himalaya.data.XimalayaDBHelper;
 import com.example.himalaya.interfaces.IPlayerCallback;
 import com.example.himalaya.presenters.PlayerPresenter;
 import com.example.himalaya.presenters.RecommendPresenter;
@@ -34,6 +42,7 @@ import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.himalaya.utils.PlayModeUtil.sIntegerPlayModeMap;
@@ -42,6 +51,7 @@ import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl
 
 public class MainActivity extends BaseActivity implements IPlayerCallback {
     private static final String TAG = "MainActivity";
+    List<String> notPermission = new ArrayList<>();
     MagicIndicator magicIndicator;
     private IndicatorAdapter indicatorAdapter;
     private ViewPager viewPager;
@@ -57,6 +67,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     //当前播放模式
     private XmPlayListControl.PlayMode mCurrentPlayMode = PLAY_MODEL_LIST;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +75,42 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         initView();
         initPresenter();
         initEvent();
+        initPermission();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void initPermission() {
+        notPermission.clear();
+        String[] permissions = new String[]{
+                Manifest.permission.INTERNET,
+        };
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this,permission)!= PackageManager.PERMISSION_GRANTED){
+                notPermission.add(permission);
+            }
+        }
+        if (notPermission.size()>0){
+            ActivityCompat.requestPermissions(this,permissions,1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean permissed = false;
+        if (requestCode == 1){
+            for (int i=0;i<permissions.length;i++){
+                if (grantResults[i] == -1){
+                    permissed = true;
+                }
+            }
+
+            if (permissed){
+                Toast.makeText(this, "权限未通过", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(this, "权限通过", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -331,7 +378,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     @Override
     public void onTrackUpdate(Track track, int index) {
         if (track != null) {
-            Picasso.with(this).load(track.getCoverUrlMiddle()).into(mRoundRectImageView);
+            Picasso.with(this).load(track.getCoverUrlLarge()).into(mRoundRectImageView);
             mHeaderTitle.setText(track.getTrackTitle());
             mSubTitle.setText(track.getAnnouncer().getNickname());
         }

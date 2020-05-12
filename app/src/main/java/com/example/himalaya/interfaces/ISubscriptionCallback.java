@@ -4,6 +4,9 @@ import com.ximalaya.ting.android.opensdk.model.album.Album;
 
 import java.util.List;
 
+/**
+ * 通知到UI界面
+ */
 public interface ISubscriptionCallback {
 
 

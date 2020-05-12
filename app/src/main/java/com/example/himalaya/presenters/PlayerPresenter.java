@@ -63,6 +63,8 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
         mPlayerManager.addAdsStatusListener(this);
         //播放器的状态变化
         mPlayerManager.addPlayerStatusListener(this);
+        //记录历史播放记录
+        mPlayerManager.setBreakpointResume(true);
         //记录当前的播放模式
         mPlayModeSp = BaseApplication.getAppContext().getSharedPreferences(PLAY_MODE_SP_NAME, Context.MODE_PRIVATE);
 
@@ -410,6 +412,8 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
         mCurrentIndex = mPlayerManager.getCurrentIndex();
         if (curModel instanceof Track) {
             mCurrentTrack = (Track) curModel;
+            HistoryPresenter historyPresenter = HistoryPresenter.getInstance();
+            historyPresenter.addHistory(mCurrentTrack);
             //LogUtil.e(TAG,"onSoundSwitch");
             for (IPlayerCallback callback : mCallbacks) {
                 callback.onTrackUpdate(mCurrentTrack, mCurrentIndex);

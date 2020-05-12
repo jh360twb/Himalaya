@@ -1,6 +1,6 @@
 package com.example.himalaya.interfaces;
 
-import com.sunofbeaches.himalaya.base.IBasePresenter;
+import com.example.himalaya.base.IBasePresenter;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 
 /**
@@ -31,7 +31,6 @@ public interface ISubscriptionPresenter extends IBasePresenter<ISubscriptionCall
 
     /**
      * 判断当前专辑是否已经收藏/订阅
-     *
      * @param album
      */
     boolean isSub(Album album);
