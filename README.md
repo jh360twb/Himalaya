@@ -1,1 +1,4 @@
-Himalaya project
+畅听APP
+调用喜马拉雅的sdk
+项目始于 4月13日
+
