@@ -19,13 +19,17 @@ public class FragmentCreator {
     public static final int INDEX_HISTORY = 2;
     //有几个fragment
     public static final int PAGE_COUNT = 3;
+    private static final String TAG = "FragmentCreator";
 
-    public static BaseFragment getFragment(int index){
+    public static BaseFragment getFragment(int index) {
+        LogUtil.e(TAG,"sCache.size -> "+sCache.size());
         BaseFragment baseFragment = sCache.get(index);
+
         if (baseFragment != null) {
             return baseFragment;
         }
-        switch (index){
+
+        switch (index) {
             case INDEX_RECOMMEND:
                 baseFragment = new RecommendFragment();
                 break;
@@ -36,7 +40,9 @@ public class FragmentCreator {
                 baseFragment = new HistoryFragment();
                 break;
         }
-        sCache.put(index,baseFragment);
+
+        sCache.put(index, baseFragment);
+
         return baseFragment;
     }
 

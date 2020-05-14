@@ -2,6 +2,7 @@ package com.example.himalaya.fragments;
 
 import android.content.Intent;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.himalaya.base.BaseFragment;
 import com.example.himalaya.interfaces.ISubscriptionCallback;
 import com.example.himalaya.presenters.AlbumDetailPresenter;
 import com.example.himalaya.presenters.SubscriptionPresenter;
+import com.example.himalaya.utils.LogUtil;
 import com.example.himalaya.views.ConfirmDialog;
 import com.example.himalaya.views.UILoader;
 import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
@@ -36,6 +38,7 @@ public class SubscriptionFragment extends BaseFragment implements ISubscriptionC
     private AlbumListAdapter mAlbumListAdapter;
     private Album mAlbum = null;
     private UILoader mUILoader;
+    private static final String TAG = "SubscriptionFragment";
 
     @Override
     protected View onSubViewLoaded(final LayoutInflater layoutInflater, ViewGroup container) {
@@ -100,6 +103,7 @@ public class SubscriptionFragment extends BaseFragment implements ISubscriptionC
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        LogUtil.e(TAG,"destroyView");
         //取消接口的注册
         if (mSubscriptionPresenter != null) {
             mSubscriptionPresenter.unRegisterViewCallback(this);
@@ -107,6 +111,7 @@ public class SubscriptionFragment extends BaseFragment implements ISubscriptionC
         //置空
         mAlbumListAdapter.setonAlbumItemClickListener(null);
     }
+
 
     @Override
     public void onAddResult(boolean isSuccess) {

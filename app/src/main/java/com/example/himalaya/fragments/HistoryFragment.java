@@ -36,7 +36,6 @@ public class HistoryFragment extends BaseFragment implements IHistoryCallback, T
     private UILoader mUiLoader;
     private TracksListAdapter mTracksListAdapter;
     private HistoryPresenter mHistoryPresenter;
-    private List<Track> mCurrentTracks;
     private static final String TAG = "HistoryFragment";
     private ConfirmCheckBoxDialog mConfirmCheckBoxDialog;
 
@@ -54,6 +53,7 @@ public class HistoryFragment extends BaseFragment implements IHistoryCallback, T
         if (mUiLoader.getParent() instanceof ViewGroup) {
             ((ViewGroup) mUiLoader.getParent()).removeView(mUiLoader);
         }
+
         view.addView(mUiLoader);
         return view;
     }
@@ -93,14 +93,16 @@ public class HistoryFragment extends BaseFragment implements IHistoryCallback, T
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        //防止内存泄漏
         if (mHistoryPresenter != null) {
             mHistoryPresenter.unRegisterViewCallback(this);
         }
+        mTracksListAdapter.setonTrackClickListener(null);
+        mTracksListAdapter.setOnTrackLongClickListener(null);
     }
 
     @Override
     public void onHistoriesLoaded(List<Track> tracks) {
-        mCurrentTracks = tracks;
         if (tracks.size() == 0){
             mUiLoader.updateStatus(UILoader.UIStatus.EMPTY);
         }else {

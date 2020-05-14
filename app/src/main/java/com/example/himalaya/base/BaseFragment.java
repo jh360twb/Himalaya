@@ -18,6 +18,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = onSubViewLoaded(inflater, container);
+        setRetainInstance(true);
         return view;
     }
 

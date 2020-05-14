@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -63,6 +64,7 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
     private ImageView mBackFifIv;
     private ImageView mFrontFifIv;
     private long mCurrentProgress = 0;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,6 +273,7 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         mPlayListBtn = findViewById(R.id.player_list);
         mBackFifIv = findViewById(R.id.backFifIv);
         mFrontFifIv = findViewById(R.id.frontFifIv);
+        mProgressBar = findViewById(R.id.progressPlayer);
 
 
         //创建适配器
@@ -308,25 +311,6 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         }
     }
 
-    @Override
-    public void onPlayStop() {
-
-    }
-
-    @Override
-    public void onPlayError() {
-
-    }
-
-    @Override
-    public void onNextPlay(Track track) {
-
-    }
-
-    @Override
-    public void onPrePlay(Track track) {
-
-    }
 
     @Override
     public void onListLoaded(List<Track> list) {
@@ -398,16 +382,6 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
         return sb.toString();
     }
 
-    @Override
-    public void onAdLoading() {
-
-    }
-
-    @Override
-    public void onAdFinished() {
-
-    }
-
     //更新歌曲标题和图面
     @Override
     public void onTrackUpdate(Track track, int index) {
@@ -429,6 +403,17 @@ public class PlayerActivity extends BaseActivity implements IPlayerCallback, Vie
     @Override
     public void updateListOrder(boolean isReverse) {
         mSobPopWindow.upDateOrderIcon(isReverse);
+    }
+
+    @Override
+    public void onBufferStart() {
+        //缓冲
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onBufferStop() {
+        mProgressBar.setVisibility(View.GONE);
     }
 
     //==============ViewPager==========

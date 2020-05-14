@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.himalaya">
+
     <!-- 连接网络 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 用于管理监听网络状态的变化 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 用于管理监听网络状态的变化 -->
@@ -10,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- target >=28 需要设置此权限 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".base.BaseApplication"
@@ -21,7 +22,39 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SearchActivity"></activity>
+
+
+        <service
+            android:name="com.ximalaya.ting.android.opensdk.player.service.XmPlayerService"
+            android:exported="true"
+            android:process=":player" />
+
+        <receiver
+            android:name="com.ximalaya.ting.android.opensdk.player.receive.PlayerReceiver"
+            android:exported="true"
+            android:process=":player">
+            <intent-filter>
+                <action android:name="com.ximalaya.ting.android.ACTION_CONTROL_START_PAUSE" />
+                <action android:name="com.ximalaya.ting.android.ACTION_CONTROL_PLAY_PRE" />
+                <action android:name="com.ximalaya.ting.android.ACTION_CONTROL_PLAY_NEXT" />
+                <action android:name="com.ximalaya.ting.android.ACTION_CLOSE" />
+                <action android:name="com.ximalaya.ting.android.ACTION_CONTROL_RELEASE_SERVICE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.MyPlayerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.app.test.android.Action_Close" />
+                <action android:name="com.app.test.android.Action_PAUSE_START" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.CustomMediaButtonReceiver" />
+
+
+        <activity android:name=".SearchActivity" />
         <activity
             android:name=".PlayerActivity"
             android:screenOrientation="portrait" />
@@ -35,6 +68,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,9 +78,7 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name="com.ximalaya.ting.android.opensdk.player.service.XmPlayerService"
-            android:process=":player" />
+
     </application>
 
 </manifest>

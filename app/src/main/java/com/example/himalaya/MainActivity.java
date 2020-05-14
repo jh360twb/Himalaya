@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.Notification;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,8 @@ import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.model.track.TrackList;
+import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
+import com.ximalaya.ting.android.opensdk.player.appnotification.XmNotificationCreater;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
@@ -66,6 +70,10 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     private SobPopWindow mSobPopWindow;
     //当前播放模式
     private XmPlayListControl.PlayMode mCurrentPlayMode = PLAY_MODEL_LIST;
+    private XmPlayerManager mXmPlayerManager;
+    private ProgressBar mProgressBar;
+    private String mCurrentNickname;
+    private String mCurrentTrackTitle;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -76,6 +84,13 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         initPresenter();
         initEvent();
         initPermission();
+        initReceiver();
+    }
+
+    private void initReceiver() {
+        mXmPlayerManager = XmPlayerManager.getInstance(MainActivity.this);
+        Notification mNotification = XmNotificationCreater.getInstanse(this).initNotification(this.getApplicationContext(), MainActivity.class);
+        mXmPlayerManager.init((int) System.currentTimeMillis(), mNotification);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -296,7 +311,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
 
         //创建内容适配器
         FragmentManager supportFragmentManager = getSupportFragmentManager();
-        MainContentAdapter mainContentAdapter = new MainContentAdapter(supportFragmentManager, 1);
+        MainContentAdapter mainContentAdapter = new MainContentAdapter(supportFragmentManager);
         viewPager.setAdapter(mainContentAdapter);
         //把ViewPager和indicator绑定起来
         magicIndicator.setNavigator(commonNavigator);
@@ -326,25 +341,6 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         mPlayControl.setImageResource(R.mipmap.play_press);
     }
 
-    @Override
-    public void onPlayStop() {
-
-    }
-
-    @Override
-    public void onPlayError() {
-
-    }
-
-    @Override
-    public void onNextPlay(Track track) {
-
-    }
-
-    @Override
-    public void onPrePlay(Track track) {
-
-    }
 
     @Override
     public void onListLoaded(List<Track> list) {
@@ -365,22 +361,15 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
 
     }
 
-    @Override
-    public void onAdLoading() {
-
-    }
-
-    @Override
-    public void onAdFinished() {
-
-    }
 
     @Override
     public void onTrackUpdate(Track track, int index) {
         if (track != null) {
             Picasso.with(this).load(track.getCoverUrlLarge()).into(mRoundRectImageView);
-            mHeaderTitle.setText(track.getTrackTitle());
-            mSubTitle.setText(track.getAnnouncer().getNickname());
+            mCurrentTrackTitle = track.getTrackTitle();
+            mCurrentNickname = track.getAnnouncer().getNickname();
+            mHeaderTitle.setText(mCurrentTrackTitle);
+            mSubTitle.setText(mCurrentNickname);
         }
         if (mSobPopWindow != null) {
             mSobPopWindow.setCurrentIndex(index);
@@ -390,5 +379,17 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     @Override
     public void updateListOrder(boolean isReverse) {
         mSobPopWindow.upDateOrderIcon(isReverse);
+    }
+
+    @Override
+    public void onBufferStart() {
+        mHeaderTitle.setText("正在缓冲");
+        mSubTitle.setText("请等待");
+    }
+
+    @Override
+    public void onBufferStop() {
+        mHeaderTitle.setText(mCurrentTrackTitle);
+        mSubTitle.setText(mCurrentNickname);
     }
 }

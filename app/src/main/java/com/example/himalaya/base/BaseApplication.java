@@ -1,24 +1,49 @@
 package com.example.himalaya.base;
 
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 
+import com.example.himalaya.receiver.MyPlayerReceiver;
 import com.example.himalaya.utils.LogUtil;
+import com.squareup.leakcanary.LeakCanary;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
+import com.ximalaya.ting.android.opensdk.player.appnotification.XmNotificationCreater;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerConfig;
+import com.ximalaya.ting.android.opensdk.util.BaseUtil;
 
 public class BaseApplication extends Application {
-
     private static Handler sHandler = null;
     private static Context sContext = null;
+    private XmPlayerManager mXmPlayerManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        //初始化用户key
+        initAccount();
+        //初始化通知栏
+        initNotification();
+        //初始化播放器
+        initPlayer();
+        //设置是否显示log
+        LogUtil.init(this.getPackageName(), false);
+        sHandler = new Handler();
+        sContext = getBaseContext();
+    }
 
+    private void initLeakcanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
+    }
+
+    private void initAccount() {
         CommonRequest mXimalaya = CommonRequest.getInstanse();
         if(DTransferConstants.isRelease) {
             String mAppSecret = "8646d66d6abe2efd14f2891f9fd1c8af";
@@ -31,13 +56,33 @@ public class BaseApplication extends Application {
             mXimalaya.setPackid("com.ximalaya.qunfeng");
             mXimalaya.init(this ,mAppSecret);
         }
-        //初始化播放器
-        XmPlayerManager.getInstance(this).init();
+    }
+
+    private void initPlayer() {
+        mXmPlayerManager = XmPlayerManager.getInstance(this);
+        mXmPlayerManager.init();
+        mXmPlayerManager.setBreakpointResume(true);
         XmPlayerConfig.getInstance(sContext).setUseTrackHighBitrate(true);
-        //设置是否显示log
-        LogUtil.init(this.getPackageName(), false);
-        sHandler = new Handler();
-        sContext = getBaseContext();
+    }
+
+    private void initNotification() {
+        if(BaseUtil.isPlayerProcess(this)) {
+            XmNotificationCreater instance = XmNotificationCreater.getInstanse(this);
+            instance.setNextPendingIntent((PendingIntent)null);
+            instance.setPrePendingIntent((PendingIntent)null);
+
+            String actionName = "com.app.test.android.Action_Close";
+            Intent intent = new Intent(actionName);
+            intent.setClass(this, MyPlayerReceiver.class);
+            PendingIntent broadcast = PendingIntent.getBroadcast(this, 0, intent, 0);
+            instance.setClosePendingIntent(broadcast);
+
+            String pauseActionName = "com.app.test.android.Action_PAUSE_START";
+            Intent intent1 = new Intent(pauseActionName);
+            intent1.setClass(this, MyPlayerReceiver.class);
+            PendingIntent broadcast1 = PendingIntent.getBroadcast(this, 0, intent1, 0);
+            instance.setStartOrPausePendingIntent(broadcast1);
+        }
     }
 
     public static Handler getHandler(){

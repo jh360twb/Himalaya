@@ -6,11 +6,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class MainContentAdapter extends FragmentPagerAdapter {
 
-    public MainContentAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
+
+    public MainContentAdapter(@NonNull FragmentManager fm) {
+        super(fm);
     }
 
     @NonNull

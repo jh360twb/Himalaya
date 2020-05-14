@@ -22,26 +22,6 @@ public interface IPlayerCallback {
     void onPlayPause();
 
     /**
-     * 播放停止
-     */
-    void onPlayStop();
-
-    /**
-     *播放错误
-     */
-    void onPlayError();
-
-    /**
-     * 下一首
-     */
-    void onNextPlay(Track track);
-
-    /**
-     * 上一首
-     */
-    void onPrePlay(Track track);
-
-    /**
      * 播放器列表数据
      * @param list
      */
@@ -60,15 +40,6 @@ public interface IPlayerCallback {
      */
     void onProgressChange(long currentProgress,long total);
 
-    /**
-     * 广告加载中
-     */
-    void onAdLoading();
-
-    /**
-     * 广告加载完成
-     */
-    void onAdFinished();
 
     /**
      *更新当前Track
@@ -81,5 +52,13 @@ public interface IPlayerCallback {
      */
     void updateListOrder(boolean isReverse);
 
+    /**
+     * 缓冲开始
+     */
+    void onBufferStart();
 
+    /**
+     * 缓冲结束
+     */
+    void onBufferStop();
 }

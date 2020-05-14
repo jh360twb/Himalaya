@@ -50,7 +50,7 @@ public class HistoryPresenter implements IHistoryPresenter, IHistoryDaoCallback 
 
     @Override
     public void addHistory(final Track track) {
-        LogUtil.e(TAG,track.getTrackTitle());
+        //LogUtil.e(TAG,track.getTrackTitle());
         if (mCurrentTracks != null && mCurrentTracks.size() >= Constants.MAX_HIS_COUNT) {
             isOutOfSize = true;
             mCurrentTrack = track;
@@ -140,7 +140,7 @@ public class HistoryPresenter implements IHistoryPresenter, IHistoryDaoCallback 
     @Override
     public void onHisListLoaded(final List<Track> tracks) {
         mCurrentTracks = tracks;
-        LogUtil.e(TAG,tracks.size()+"");
+        //LogUtil.e(TAG,tracks.size()+"");
         BaseApplication.getHandler().post(new Runnable() {
             @Override
             public void run() {

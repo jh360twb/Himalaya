@@ -423,12 +423,16 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
 
     @Override
     public void onBufferingStart() {
-
+        for (IPlayerCallback callback : mCallbacks) {
+            callback.onBufferStart();
+        }
     }
 
     @Override
     public void onBufferingStop() {
-
+        for (IPlayerCallback callback : mCallbacks) {
+            callback.onBufferStop();
+        }
     }
 
     @Override

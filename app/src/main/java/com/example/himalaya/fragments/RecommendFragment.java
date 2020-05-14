@@ -41,7 +41,6 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
                 return createSuccessView(layoutInflater, container);
             }
         };
-
         //获取到逻辑层的对象
         mRecommendPresenter = RecommendPresenter.getInstance();
         //先要注册通知接口的设置
@@ -91,7 +90,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
 
     @Override
     public void onRecommendListLoaded(List<Album> result) {
-        LogUtil.e(TAG, "onRecommendListLoaded");
+        //LogUtil.e(TAG, "onRecommendListLoaded");
         //当我们获取到推荐内容时,方法就会被调用
         //数据回来之后更新UI
         recommendListAdapter.setData(result);
@@ -116,7 +115,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
 
     @Override
     public void onLoading() {
-        LogUtil.e(TAG, "onLoading");
+        //LogUtil.e(TAG, "onLoading");
 
         uiLoader.updateStatus(UILoader.UIStatus.LOADING);
 
@@ -130,6 +129,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         if (mRecommendPresenter != null) {
             mRecommendPresenter.unRegisterViewCallback(this);
         }
+        recommendListAdapter.setonAlbumItemClickListener(null);
     }
 
     @Override

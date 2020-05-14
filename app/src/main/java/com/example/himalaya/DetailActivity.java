@@ -124,7 +124,7 @@ public class DetailActivity extends BaseActivity implements IAlbumDetailViewCall
         if (mSubscriptionPresenter!=null){
             mSubscriptionPresenter.unRegisterViewCallback(this);
         }
-
+        tracksListAdapter.setonTrackClickListener(null);
     }
 
     private void initPresenter() {
@@ -362,10 +362,6 @@ public class DetailActivity extends BaseActivity implements IAlbumDetailViewCall
         updatePlayState(false);
     }
 
-    @Override
-    public void onPlayStop() {
-        updatePlayState(false);
-    }
 
     @Override
     public void onTrackUpdate(Track track, int index) {
@@ -377,20 +373,6 @@ public class DetailActivity extends BaseActivity implements IAlbumDetailViewCall
         }
     }
 
-    @Override
-    public void onPlayError() {
-
-    }
-
-    @Override
-    public void onNextPlay(Track track) {
-
-    }
-
-    @Override
-    public void onPrePlay(Track track) {
-
-    }
 
     @Override
     public void onListLoaded(List<Track> list) {
@@ -408,19 +390,21 @@ public class DetailActivity extends BaseActivity implements IAlbumDetailViewCall
     }
 
     @Override
-    public void onAdLoading() {
-
-    }
-
-    @Override
-    public void onAdFinished() {
-
-    }
-
-    @Override
     public void updateListOrder(boolean isReverse) {
 
     }
+
+    @Override
+    public void onBufferStart() {
+        //todo
+        mDetailPlayTv.setText("正在缓冲");
+    }
+
+    @Override
+    public void onBufferStop() {
+        mDetailPlayTv.setText(mCurrentTitle);
+    }
+
     //================订阅==================
     @Override
     public void onAddResult(boolean isSuccess) {
