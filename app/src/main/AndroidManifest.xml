@@ -30,6 +30,15 @@
             android:process=":player" />
 
         <receiver
+            android:name=".receiver.MyPlayerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.app.test.android.Action_Close" />
+                <action android:name="com.app.test.android.Action_PAUSE_START" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name="com.ximalaya.ting.android.opensdk.player.receive.PlayerReceiver"
             android:exported="true"
             android:process=":player">
@@ -42,14 +51,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".receiver.MyPlayerReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.app.test.android.Action_Close" />
-                <action android:name="com.app.test.android.Action_PAUSE_START" />
-            </intent-filter>
-        </receiver>
+
 
         <receiver android:name=".receiver.CustomMediaButtonReceiver" />
 

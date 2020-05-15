@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.example.himalaya.R;
 import com.example.himalaya.base.BaseApplication;
-import com.example.himalaya.views.SobPopWindow;
+import com.example.himalaya.views.PlayPopWindow;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class PopListAdapter extends RecyclerView.Adapter<PopListAdapter.InnerViewHolder> {
     List<Track> mData = new ArrayList<>();
     private int mCurrentPosition;
-    private SobPopWindow.onItemClickListener mOnItemClickListener;
+    private PlayPopWindow.onItemClickListener mOnItemClickListener;
 
     @NonNull
     @Override
@@ -75,7 +75,7 @@ public class PopListAdapter extends RecyclerView.Adapter<PopListAdapter.InnerVie
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(SobPopWindow.onItemClickListener listener){
+    public void setOnItemClickListener(PlayPopWindow.onItemClickListener listener){
         this.mOnItemClickListener = listener;
     }
 

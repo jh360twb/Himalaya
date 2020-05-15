@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_play_list_bg"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:text="定时关闭"
+        android:layout_marginLeft="5dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <RadioGroup
+        android:id="@+id/time_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:layout_marginTop="5dp"
+            android:id="@+id/radio_0"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:text="不开启"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+        <RadioButton
+            android:id="@+id/radio_10"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:text="10分钟"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+        <RadioButton
+            android:id="@+id/radio_20"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:text="20分钟"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+        <RadioButton
+            android:id="@+id/radio_30"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:text="30分钟"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+        <RadioButton
+            android:id="@+id/radio_45"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:text="45分钟"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+        <RadioButton
+            android:id="@+id/radio_60"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:text="60分钟"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/time_list_close_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/play_list_rv"
+        android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="关闭"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+</LinearLayout>

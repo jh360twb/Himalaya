@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.example.himalaya.R;
 import com.example.himalaya.adapters.PopListAdapter;
 import com.example.himalaya.base.BaseApplication;
-import com.example.himalaya.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 
 import java.util.List;
@@ -25,13 +24,13 @@ import androidx.recyclerview.widget.RecyclerView;
  * @description 播放列表弹窗
  * @date :2020/4/27 16:10
  */
-public class SobPopWindow extends PopupWindow{
+public class PlayPopWindow extends PopupWindow{
 
     private final View mPopView;
     private TextView mClose_btn;
     private PopListAdapter mPopListAdapter;
     private RecyclerView mPlayListRv;
-    private static final String TAG = "SobPopWindow";
+    private static final String TAG = "PlayPopWindow";
     private ImageView mPlayListModeIv;
     private TextView mPlayListModeTv;
     private playListActionListener mOnPlayListActionListener = null;
@@ -40,7 +39,7 @@ public class SobPopWindow extends PopupWindow{
     private ImageView mPlayListOrderIv;
     private TextView mPlayListOrderTv;
 
-    public SobPopWindow() {
+    public PlayPopWindow() {
         super(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         //先要设置setBackgroundDrawable,然后setOutsideTouchable才有效果
         setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -77,7 +76,7 @@ public class SobPopWindow extends PopupWindow{
         mClose_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SobPopWindow.this.dismiss();
+                PlayPopWindow.this.dismiss();
             }
         });
 

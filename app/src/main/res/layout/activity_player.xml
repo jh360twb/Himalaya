@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,8 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/track_title"
         android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/track_pager_view"
@@ -40,27 +40,42 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_marginBottom="5dp"
             android:orientation="horizontal">
 
+
+            <View
+                android:id="@+id/remarkView"
+                android:layout_centerHorizontal="true"
+                android:layout_width="35dp"
+                android:layout_height="35dp"/>
             <ImageView
                 android:id="@+id/backFifIv"
+                android:layout_toLeftOf="@id/remarkView"
+                android:layout_marginRight="15dp"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginRight="15dp"
                 android:src="@mipmap/backfifteen" />
 
             <ImageView
                 android:id="@+id/frontFifIv"
                 android:layout_width="35dp"
-                android:layout_height="35dp"
                 android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@id/remarkView"
+                android:layout_height="35dp"
                 android:src="@mipmap/frontfifteen" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/timeCloseIv"
+                android:layout_width="35dp"
+                android:layout_centerHorizontal="true"
+                android:layout_height="35dp"
+                android:src="@mipmap/timeclose" />
+        </RelativeLayout>
+
 
         <!--进度条和时间-->
         <RelativeLayout
@@ -142,8 +157,6 @@
                 android:layout_height="25dp"
                 android:layout_weight="1"
                 android:src="@drawable/selector_player_list" />
-
-
         </LinearLayout>
 
 

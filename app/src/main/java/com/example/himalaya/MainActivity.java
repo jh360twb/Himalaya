@@ -25,20 +25,20 @@ import com.example.himalaya.adapters.IndicatorAdapter;
 import com.example.himalaya.adapters.MainContentAdapter;
 import com.example.himalaya.data.XimalayaApi;
 import com.example.himalaya.base.BaseActivity;
-import com.example.himalaya.data.XimalayaDBHelper;
 import com.example.himalaya.interfaces.IPlayerCallback;
 import com.example.himalaya.presenters.PlayerPresenter;
 import com.example.himalaya.presenters.RecommendPresenter;
 import com.example.himalaya.utils.LogUtil;
+import com.example.himalaya.views.PlayPopWindow;
 import com.example.himalaya.views.PopWindowBgChange;
 import com.example.himalaya.views.RoundRectImageView;
-import com.example.himalaya.views.SobPopWindow;
 import com.squareup.picasso.Picasso;
 import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 import com.ximalaya.ting.android.opensdk.model.track.Track;
 import com.ximalaya.ting.android.opensdk.model.track.TrackList;
 import com.ximalaya.ting.android.opensdk.player.XmPlayerManager;
+import com.ximalaya.ting.android.opensdk.player.appnotification.NotificationColorUtils;
 import com.ximalaya.ting.android.opensdk.player.appnotification.XmNotificationCreater;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl;
 
@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     private View mPlayControlItem;
     private View mSearchBtn;
     private ImageView mPlayListIv;
-    private SobPopWindow mSobPopWindow;
+    private PlayPopWindow mSobPopWindow;
     //当前播放模式
     private XmPlayListControl.PlayMode mCurrentPlayMode = PLAY_MODEL_LIST;
     private XmPlayerManager mXmPlayerManager;
@@ -80,17 +80,23 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initReceiver();
         initView();
         initPresenter();
         initEvent();
         initPermission();
-        initReceiver();
     }
 
     private void initReceiver() {
         mXmPlayerManager = XmPlayerManager.getInstance(MainActivity.this);
+        NotificationColorUtils.isTargerSDKVersion24More = true;
+        XmPlayerManager.getInstance(this).init(
+                (int) System.currentTimeMillis(),
+                XmNotificationCreater.getInstanse(this)
+                        .createNotification(this.getApplicationContext(),
+                                MainActivity.class));
         Notification mNotification = XmNotificationCreater.getInstanse(this).initNotification(this.getApplicationContext(), MainActivity.class);
-        mXmPlayerManager.init((int) System.currentTimeMillis(), mNotification);
+        mXmPlayerManager.setNotificationForNoCrash((int) System.currentTimeMillis(),mNotification);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -224,7 +230,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
 
 
         //列表点击切换歌曲
-        mSobPopWindow.setOnItemClickListener(new SobPopWindow.onItemClickListener() {
+        mSobPopWindow.setOnItemClickListener(new PlayPopWindow.onItemClickListener() {
             @Override
             public void onClick(int pos) {
                 if (mPlayerPresenter != null) {
@@ -234,7 +240,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         });
 
         //列表切换播放模式和顺序
-        mSobPopWindow.setPlayListActionListener(new SobPopWindow.playListActionListener() {
+        mSobPopWindow.setPlayListActionListener(new PlayPopWindow.playListActionListener() {
             @Override
             public void onPlayModeClick() {
                 //切换播放模式
@@ -328,7 +334,7 @@ public class MainActivity extends BaseActivity implements IPlayerCallback {
         //搜索
         mSearchBtn = this.findViewById(R.id.search_btn);
         //列表弹窗
-        mSobPopWindow = new SobPopWindow();
+        mSobPopWindow = new PlayPopWindow();
     }
 
     @Override
