@@ -98,7 +98,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="这是标题"
+            android:layout_marginRight="10dp"
             android:textColor="@color/white"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textSize="18sp" />
 
         <TextView
